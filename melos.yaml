@@ -1,0 +1,4 @@
+name: tasque
+
+packages:
+  - apps/*
