@@ -17,13 +17,34 @@ abstract class AppTheme {
       borderRadius: BorderRadius.circular(20),
       borderSide: inputBorderSide,
     );
+    const buttonPadding = EdgeInsets.all(15);
+    final buttonShape = RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(15),
+    );
     return theme.copyWith(
       cardTheme: theme.cardTheme.copyWith(
         margin: EdgeInsets.zero,
         elevation: 0,
       ),
       iconButtonTheme: IconButtonThemeData(
-        style: IconButton.styleFrom(backgroundColor: cs.onSurface.fade(0.1)),
+        style: IconButton.styleFrom(
+          backgroundColor: cs.onSurface.fade(0.1),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+        ),
+      ),
+      filledButtonTheme: FilledButtonThemeData(
+        style: FilledButton.styleFrom(
+          padding: buttonPadding,
+          shape: buttonShape,
+        ),
+      ),
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: OutlinedButton.styleFrom(
+          padding: buttonPadding,
+          shape: buttonShape,
+        ),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,

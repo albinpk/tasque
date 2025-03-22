@@ -33,6 +33,18 @@ abstract class Task with _$Task {
     priority: entity.priority,
   );
 
+  /// Converts [Task] to [TaskEntity].
+  TaskEntity toEntity() =>
+      TaskEntity(
+          title: title,
+          description: description,
+          dueDate: dueDate,
+          createdAt: createdAt,
+        )
+        ..id = id
+        ..priority = priority
+        ..status = status;
+
   /// Returns the number of days left as a string.
   String get relativeDueDate {
     if (dueDate.isToday) return 'Due today';

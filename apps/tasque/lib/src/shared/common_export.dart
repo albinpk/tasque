@@ -7,5 +7,6 @@ export 'package:form_builder_validators/form_builder_validators.dart';
 export 'package:go_router/go_router.dart';
 export 'package:intl/intl.dart' hide TextDirection;
 
+export '../core/router/routes.dart';
 export 'extensions/extensions.dart';
 export 'widgets/widgets.dart';

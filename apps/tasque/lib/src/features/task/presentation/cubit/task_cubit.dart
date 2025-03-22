@@ -71,4 +71,21 @@ class TaskCubit extends Cubit<TaskState> {
       ),
     );
   }
+
+  Future<void> updateTask(Task task) async {
+    try {
+      await _taskRepository.updateTask(task);
+      emit(await _getTaskData());
+    } on Exception catch (e) {
+      emit(TaskState.error(message: e.toString()));
+    }
+  }
+
+  Future<void> markAsDone(Task task) async {
+    await updateTask(task.copyWith(status: TaskStatus.completed));
+  }
+
+  Future<void> markAsPending(Task task) async {
+    await updateTask(task.copyWith(status: TaskStatus.pending));
+  }
 }
