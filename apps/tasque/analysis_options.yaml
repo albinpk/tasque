@@ -4,6 +4,7 @@ analyzer:
   errors:
     public_member_api_docs: ignore
     always_use_package_imports: ignore
+    use_late_for_private_fields_and_variables: ignore
 
 linter:
   rules:

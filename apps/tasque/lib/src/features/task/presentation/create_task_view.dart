@@ -1,5 +1,6 @@
 import '../../../shared/common_export.dart';
 import '../model/task_priority_enum.dart';
+import 'cubit/task_cubit.dart';
 
 /// A view to create a new task.
 class CreateTaskView extends StatefulWidget {
@@ -24,6 +25,7 @@ class _CreateTaskViewState extends State<CreateTaskView> {
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
   final _dateController = TextEditingController();
+  DateTime? _date;
 
   @override
   void dispose() {
@@ -145,7 +147,13 @@ class _CreateTaskViewState extends State<CreateTaskView> {
 
   void _onCreate() {
     if (!_formKey.currentState!.validate()) return;
-    debugPrint('creating task...');
+    context.read<TaskCubit>().createTask(
+      title: _titleController.text.trim(),
+      description: _descriptionController.text.trim(),
+      dueDate: _date!,
+      priority: _priority,
+    );
+    context.pop();
   }
 
   Widget _buildPriority(TaskPriority priority) {
@@ -197,6 +205,7 @@ class _CreateTaskViewState extends State<CreateTaskView> {
       lastDate: now.add(const Duration(days: 365 * 5)), // 5 years
     );
     if (date == null) return;
+    _date = date;
     _dateController.text = DateFormat('dd MMM yyyy').format(date);
   }
 }

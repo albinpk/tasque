@@ -1,10 +1,14 @@
 import '../../../shared/common_export.dart';
 import 'create_task_view.dart';
+import 'cubit/task_cubit.dart';
 import 'widget/task_card.dart';
 
 /// The main screen of the app.
 class TaskScreen extends StatelessWidget {
   const TaskScreen({super.key});
+
+  /// Padding for the page.
+  static const _padding = 15.0;
 
   @override
   Widget build(BuildContext context) {
@@ -14,78 +18,54 @@ class TaskScreen extends StatelessWidget {
           _buildAppBar(context),
 
           // grid - in progress, urgent, completed, overdue
-          SliverToBoxAdapter(
+          const SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.all(15),
-              child: Column(
-                spacing: 15,
-                children: [
-                  Row(
-                    spacing: 15,
-                    children: [
-                      Expanded(
-                        child: _buildGridCard(
-                          context: context,
-                          title: 'In Progress',
-                          subtitle: '5 tasks',
-                          icon: Icons.sync,
-                          color: Colors.blue,
-                        ),
-                      ),
-                      Expanded(
-                        child: _buildGridCard(
-                          context: context,
-                          title: 'Urgent',
-                          subtitle: '2 tasks',
-                          icon: Icons.priority_high_rounded,
-                          color: Colors.yellow,
-                        ),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    spacing: 15,
-                    children: [
-                      Expanded(
-                        child: _buildGridCard(
-                          context: context,
-                          title: 'Completed',
-                          subtitle: '14 tasks',
-                          icon: Icons.check,
-                          color: Colors.green,
-                        ),
-                      ),
-                      Expanded(
-                        child: _buildGridCard(
-                          context: context,
-                          title: 'Overdue',
-                          subtitle: '1 tasks',
-                          icon: Icons.date_range_rounded,
-                          color: Colors.red,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+              padding: EdgeInsets.all(_padding),
+              child: _TaskSummary(),
             ),
           ),
 
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.all(15).copyWith(bottom: 0),
+              padding: const EdgeInsets.all(_padding).copyWith(bottom: 0),
               child: Text('Recent Tasks', style: context.titleMedium),
             ),
           ),
 
           // recent tasks list
-          SliverPadding(
-            padding: const EdgeInsets.all(15).copyWith(bottom: 120), // for FAB
-            sliver: SliverList.separated(
-              itemCount: 20,
-              separatorBuilder: (_, _) => const SizedBox(height: 20),
-              itemBuilder: (_, index) => const TaskCard(),
-            ),
+          BlocBuilder<TaskCubit, TaskState>(
+            builder: (context, state) {
+              return switch (state) {
+                TaskStateInitial() ||
+                TaskStateLoading() => const SliverFillRemaining(
+                  hasScrollBody: false,
+                  child: Center(child: CircularProgressIndicator()),
+                ),
+                TaskStateLoaded(:final recentTasks) =>
+                  recentTasks.isEmpty
+                      ? const SliverFillRemaining(
+                        hasScrollBody: false,
+                        child: Center(child: Text('No tasks yet')),
+                      )
+                      : SliverPadding(
+                        padding: const EdgeInsets.all(
+                          _padding,
+                        ).copyWith(bottom: 120), // 120 for FAB
+                        sliver: SliverList.separated(
+                          itemCount: recentTasks.length,
+                          separatorBuilder:
+                              (_, _) => const SizedBox(height: 20),
+                          itemBuilder: (_, index) {
+                            return TaskCard(task: recentTasks[index]);
+                          },
+                        ),
+                      ),
+                TaskStateError() => const SliverFillRemaining(
+                  hasScrollBody: false,
+                  child: Center(child: Text('Something went wrong')),
+                ),
+              };
+            },
           ),
         ],
       ),
@@ -125,6 +105,7 @@ class TaskScreen extends StatelessWidget {
   }
 
   void _showCreateTaskForm(BuildContext context) {
+    // padding will not be available from the context of bottom sheet builder
     final padding = MediaQuery.paddingOf(context);
     showModalBottomSheet<void>(
       context: context,
@@ -148,13 +129,75 @@ class TaskScreen extends StatelessWidget {
       },
     );
   }
+}
+
+class _TaskSummary extends StatelessWidget {
+  const _TaskSummary({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final summary = context.select((TaskCubit value) {
+      if (value.state case final TaskStateLoaded data) return data.summary;
+    });
+    return Column(
+      spacing: 15,
+      children: [
+        Row(
+          spacing: 15,
+          children: [
+            Expanded(
+              child: _buildGridCard(
+                context: context,
+                title: 'In Progress',
+                count: summary?.inProgress,
+                icon: Icons.sync,
+                color: Colors.blue,
+              ),
+            ),
+            Expanded(
+              child: _buildGridCard(
+                context: context,
+                title: 'Urgent',
+                count: summary?.urgent,
+                icon: Icons.priority_high_rounded,
+                color: Colors.yellow,
+              ),
+            ),
+          ],
+        ),
+        Row(
+          spacing: 15,
+          children: [
+            Expanded(
+              child: _buildGridCard(
+                context: context,
+                title: 'Completed',
+                count: summary?.completed,
+                icon: Icons.check,
+                color: Colors.green,
+              ),
+            ),
+            Expanded(
+              child: _buildGridCard(
+                context: context,
+                title: 'Overdue',
+                count: summary?.overdue,
+                icon: Icons.date_range_rounded,
+                color: Colors.red,
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
 
   Widget _buildGridCard({
     required BuildContext context,
     required String title,
-    required String subtitle,
     required IconData icon,
     required Color color,
+    required int? count,
   }) {
     return Card(
       color: color.lighten(),
@@ -177,7 +220,7 @@ class TaskScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(title, style: context.titleSmall.bold),
-                  Text(subtitle, style: context.labelSmall.fade()),
+                  Text('${count ?? 0} tasks', style: context.labelSmall.fade()),
                 ],
               ),
             ),

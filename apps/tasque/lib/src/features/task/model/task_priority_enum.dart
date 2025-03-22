@@ -13,4 +13,8 @@ enum TaskPriority {
 
   /// Priority color.
   final Color color;
+
+  /// Get priority enum from name.
+  static TaskPriority fromName(String name) =>
+      TaskPriority.values.firstWhere((e) => e.name == name);
 }

@@ -1,8 +1,11 @@
 import '../../../../shared/common_export.dart';
+import '../../model/task.dart';
 
 /// Widget to display a task in the task screen.
 class TaskCard extends StatelessWidget {
-  const TaskCard({super.key});
+  const TaskCard({required this.task, super.key});
+
+  final Task task;
 
   @override
   Widget build(BuildContext context) {
@@ -16,19 +19,27 @@ class TaskCard extends StatelessWidget {
           padding: const EdgeInsets.all(10),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
+            spacing: 5,
             children: [
               Row(
                 children: [
-                  Expanded(child: Text('Task title', style: context.bodyLarge)),
+                  Expanded(child: Text(task.title, style: context.bodyLarge)),
 
                   // task status
                   Card.filled(
+                    color:
+                        task.status.isPending
+                            ? Colors.orangeAccent
+                            : Colors.green,
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 8,
                         vertical: 4,
                       ),
-                      child: Text('Completed', style: context.labelSmall),
+                      child: Text(
+                        task.status.name.capitalize,
+                        style: context.labelSmall.copyWith(color: Colors.white),
+                      ),
                     ),
                   ),
                 ],
@@ -41,7 +52,11 @@ class TaskCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       spacing: 4,
                       children: [
-                        Text('Description', style: context.bodySmall.fade()),
+                        if (task.description != null)
+                          Text(
+                            task.description!,
+                            style: context.bodySmall.fade(),
+                          ),
 
                         // task due date
                         Row(
@@ -60,17 +75,25 @@ class TaskCard extends StatelessWidget {
 
                   // task priority
                   Card.outlined(
+                    shape: RoundedRectangleBorder(
+                      side: BorderSide(color: task.priority.color),
+                      borderRadius: BorderRadius.circular(15),
+                    ),
                     child: Padding(
                       padding: const EdgeInsets.all(5),
                       child: Row(
                         children: [
-                          const Icon(
-                            Icons.keyboard_double_arrow_up_rounded,
+                          Icon(
+                            task.priority.icon,
                             size: 12,
+                            color: task.priority.color,
                           ),
                           Text(
-                            'High',
-                            style: context.labelSmall.copyWith(fontSize: 8),
+                            task.priority.name.capitalize,
+                            style: context.labelSmall.copyWith(
+                              fontSize: 8,
+                              color: task.priority.color,
+                            ),
                           ),
                         ],
                       ),
