@@ -1,5 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import '../../../shared/common_export.dart';
 import '../data/local/model/task_entity.dart';
 import 'task_priority_enum.dart';
 import 'task_status_enum.dart';
@@ -19,6 +20,8 @@ abstract class Task with _$Task {
     required TaskPriority priority,
   }) = _Task;
 
+  const Task._();
+
   /// Converts [TaskEntity] to [Task].
   factory Task.fromEntity(TaskEntity entity) => Task(
     id: entity.id,
@@ -29,4 +32,11 @@ abstract class Task with _$Task {
     status: entity.status,
     priority: entity.priority,
   );
+
+  /// Returns the number of days left as a string.
+  String get relativeDueDate {
+    if (dueDate.isToday) return 'Due today';
+    if (dueDate.isBefore(DateTime.now())) return 'Overdue';
+    return dueDate.daysLeft();
+  }
 }

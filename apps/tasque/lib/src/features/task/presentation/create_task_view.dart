@@ -206,6 +206,6 @@ class _CreateTaskViewState extends State<CreateTaskView> {
     );
     if (date == null) return;
     _date = date;
-    _dateController.text = DateFormat('dd MMM yyyy').format(date);
+    _dateController.text = date.format();
   }
 }
