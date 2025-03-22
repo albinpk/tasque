@@ -1,6 +1,7 @@
 import '../../../shared/common_export.dart';
 import '../model/task_priority_enum.dart';
 import 'cubit/task_cubit.dart';
+import 'widget/priority_button.dart';
 
 /// A view to create a new task.
 class CreateTaskView extends StatefulWidget {
@@ -26,6 +27,7 @@ class _CreateTaskViewState extends State<CreateTaskView> {
   final _descriptionController = TextEditingController();
   final _dateController = TextEditingController();
   DateTime? _date;
+  TaskPriority _priority = TaskPriority.medium;
 
   @override
   void dispose() {
@@ -34,8 +36,6 @@ class _CreateTaskViewState extends State<CreateTaskView> {
     _dateController.dispose();
     super.dispose();
   }
-
-  TaskPriority _priority = TaskPriority.medium;
 
   @override
   Widget build(BuildContext context) {
@@ -157,41 +157,14 @@ class _CreateTaskViewState extends State<CreateTaskView> {
   }
 
   Widget _buildPriority(TaskPriority priority) {
-    final cs = context.colorScheme;
-    final selected = _priority == priority;
-    final color = selected ? Colors.white : cs.onSurface;
     return Expanded(
-      child: SolidShadow(
-        child: Card(
-          color: selected ? priority.color : cs.surface,
-          shape: RoundedRectangleBorder(
-            side: const BorderSide(),
-            borderRadius: BorderRadius.circular(20),
-          ),
-          clipBehavior: Clip.hardEdge,
-          child: InkWell(
-            onTap: () {
-              setState(() => _priority = priority);
-              FocusScope.of(context).unfocus();
-            },
-            child: Center(
-              child: Padding(
-                padding: const EdgeInsets.all(14),
-                child: FittedBox(
-                  child: Row(
-                    children: [
-                      Icon(priority.icon, color: color),
-                      Text(
-                        priority.name.capitalize,
-                        style: context.bodyLarge.copyWith(color: color),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
+      child: PriorityButton(
+        priority: priority,
+        selected: _priority == priority,
+        onTap: () {
+          setState(() => _priority = priority);
+          FocusScope.of(context).unfocus();
+        },
       ),
     );
   }

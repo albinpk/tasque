@@ -132,7 +132,7 @@ class TaskScreen extends StatelessWidget {
 }
 
 class _TaskSummary extends StatelessWidget {
-  const _TaskSummary({super.key});
+  const _TaskSummary();
 
   @override
   Widget build(BuildContext context) {
