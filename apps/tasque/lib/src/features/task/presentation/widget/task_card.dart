@@ -19,7 +19,7 @@ class TaskCard extends StatelessWidget {
         ),
         clipBehavior: Clip.hardEdge,
         child: InkWell(
-          onTap: () => TaskDetailsRoute(taskId: task.id).go(context),
+          onTap: () => TaskDetailsRoute(taskId: task.id).push<void>(context),
           child: Padding(
             padding: const EdgeInsets.all(10),
             child: Column(

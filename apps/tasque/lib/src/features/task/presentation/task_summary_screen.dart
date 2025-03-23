@@ -45,7 +45,7 @@ class TaskSummaryScreen extends StatelessWidget {
                       });
                       if (totalCount == 0) return const SizedBox.shrink();
                       return TextButton(
-                        onPressed: () => TaskListRoute().go(context),
+                        onPressed: () => const TaskListRoute().go(context),
                         style: TextButton.styleFrom(padding: EdgeInsets.zero),
                         child: Text('See all ($totalCount)'),
                       );
@@ -122,7 +122,7 @@ class TaskSummaryScreen extends StatelessWidget {
         IconButton(
           tooltip: 'Search',
           icon: const Icon(Icons.search),
-          onPressed: () {},
+          onPressed: () => const TaskListRoute(search: true).go(context),
         ),
       ],
     );
