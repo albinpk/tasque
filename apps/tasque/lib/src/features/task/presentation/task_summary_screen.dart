@@ -4,8 +4,8 @@ import 'cubit/task_cubit.dart';
 import 'widget/task_card.dart';
 
 /// The main screen of the app.
-class TaskScreen extends StatelessWidget {
-  const TaskScreen({super.key});
+class TaskSummaryScreen extends StatelessWidget {
+  const TaskSummaryScreen({super.key});
 
   /// Padding for the page.
   static const _padding = 15.0;
@@ -28,7 +28,31 @@ class TaskScreen extends StatelessWidget {
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.all(_padding).copyWith(bottom: 0),
-              child: Text('Recent Tasks', style: context.titleMedium),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text('Recent Tasks', style: context.titleMedium),
+                  ),
+
+                  // see all (if any)
+                  Builder(
+                    builder: (context) {
+                      final totalCount = context.select((TaskCubit cubit) {
+                        if (cubit.state case TaskStateLoaded(:final tasks)) {
+                          return tasks.length;
+                        }
+                        return 0;
+                      });
+                      if (totalCount == 0) return const SizedBox.shrink();
+                      return TextButton(
+                        onPressed: () => TaskListRoute().go(context),
+                        style: TextButton.styleFrom(padding: EdgeInsets.zero),
+                        child: Text('See all ($totalCount)'),
+                      );
+                    },
+                  ),
+                ],
+              ),
             ),
           ),
 

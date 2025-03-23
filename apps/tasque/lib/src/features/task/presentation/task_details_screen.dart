@@ -8,6 +8,7 @@ import 'widget/priority_button.dart';
 import 'widget/priority_chip.dart';
 import 'widget/status_chip.dart';
 
+/// The details screen of a task.
 class TaskDetailsScreen extends StatefulWidget {
   const TaskDetailsScreen({required this.taskId, super.key});
 
