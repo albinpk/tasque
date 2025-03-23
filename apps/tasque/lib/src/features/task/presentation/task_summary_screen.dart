@@ -1,4 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
+
 import '../../../shared/common_export.dart';
+import '../../auth/repository/auth_repository.dart';
 import '../model/task_status_enum.dart';
 import 'create_task_view.dart';
 import 'cubit/task_cubit.dart';
@@ -16,7 +19,7 @@ class TaskSummaryScreen extends StatelessWidget {
     return Scaffold(
       body: CustomScrollView(
         slivers: [
-          _buildAppBar(context),
+          const _AppBar(),
 
           // grid - in progress, urgent, completed, overdue
           const SliverToBoxAdapter(
@@ -102,33 +105,6 @@ class TaskSummaryScreen extends StatelessWidget {
     );
   }
 
-  SliverAppBar _buildAppBar(BuildContext context) {
-    return SliverAppBar(
-      centerTitle: false,
-      titleSpacing: 0,
-      snap: true,
-      floating: true,
-      leading: const Center(child: CircleAvatar(child: Icon(Icons.person))),
-      title: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text('Hi, User', style: context.titleMedium.bold),
-          Text(
-            'You daily adventure starts now',
-            style: context.bodySmall.fade(),
-          ),
-        ],
-      ),
-      actions: [
-        IconButton(
-          tooltip: 'Search',
-          icon: const Icon(Icons.search),
-          onPressed: () => const TaskListRoute(searchQuery: '').go(context),
-        ),
-      ],
-    );
-  }
-
   void _showCreateTaskForm(BuildContext context) {
     // padding will not be available from the context of bottom sheet builder
     final padding = MediaQuery.paddingOf(context);
@@ -153,6 +129,121 @@ class TaskSummaryScreen extends StatelessWidget {
         );
       },
     );
+  }
+}
+
+/// App bar with user details.
+class _AppBar extends StatefulWidget {
+  const _AppBar();
+
+  @override
+  State<_AppBar> createState() => _AppBarState();
+}
+
+class _AppBarState extends State<_AppBar> {
+  late final _userStream = context.read<AuthRepository>().userStream();
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder(
+      stream: _userStream,
+      builder: (context, snapshot) {
+        final user = snapshot.data;
+        return SliverAppBar(
+          centerTitle: false,
+          titleSpacing: 0,
+          snap: true,
+          floating: true,
+          leading: Center(
+            child: GestureDetector(
+              onTap: user == null ? null : () => _showUserDialog(user),
+              child: CircleAvatar(
+                foregroundImage:
+                    user?.photoURL == null
+                        ? null
+                        : NetworkImage(user!.photoURL!),
+                child: const Icon(Icons.person),
+              ),
+            ),
+          ),
+          title: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Hi${user?.displayName != null ? ', ${user!.displayName}' : ''}',
+                style: context.titleMedium.bold,
+              ),
+              Text(
+                'You daily adventure starts now',
+                style: context.bodySmall.fade(),
+              ),
+            ],
+          ),
+          actions: [
+            IconButton(
+              tooltip: 'Search',
+              icon: const Icon(Icons.search),
+              onPressed: () => const TaskListRoute(searchQuery: '').go(context),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showUserDialog(User user) {
+    showDialog<void>(
+      context: context,
+      builder: (context) => _UserDialog(user: user),
+    );
+  }
+}
+
+/// Dialog to show user details and sign out button.
+class _UserDialog extends StatelessWidget {
+  const _UserDialog({required this.user});
+
+  final User user;
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      child: Padding(
+        padding: const EdgeInsets.all(15),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            CircleAvatar(
+              radius: 30,
+              foregroundImage:
+                  user.photoURL == null ? null : NetworkImage(user.photoURL!),
+              child: const Icon(Icons.person),
+            ),
+            const SizedBox(height: 10),
+
+            Text(user.displayName ?? 'Hello', style: context.titleMedium),
+
+            TextButton(
+              onPressed: () => _onSignOut(context),
+              child: const Text('Sign out'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _onSignOut(BuildContext context) async {
+    try {
+      await context.read<AuthRepository>().signOut();
+      if (context.mounted) LoginRoute().go(context);
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Something went wrong.')));
+      }
+    }
   }
 }
 

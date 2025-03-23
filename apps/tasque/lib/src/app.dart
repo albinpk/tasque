@@ -1,6 +1,7 @@
 import '../main.dart';
 import 'core/router/router.dart';
 import 'core/themes/app_theme.dart';
+import 'features/auth/repository/auth_repository.dart';
 import 'features/task/data/local/task_local_repository.dart';
 import 'features/task/presentation/cubit/task_cubit.dart';
 import 'shared/common_export.dart';
@@ -16,6 +17,7 @@ class App extends StatelessWidget {
         RepositoryProvider(
           create: (_) => TaskLocalRepository(taskBox: objectbox.store.box()),
         ),
+        RepositoryProvider(create: (_) => AuthRepository()),
       ],
       child: MultiBlocProvider(
         providers: [

@@ -12,7 +12,20 @@
           "package_name": "dev.albinpk.tasque"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "819417577348-7vff2vdsn8dt67nd6t9cbbm8ben3g8bi.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "dev.albinpk.tasque",
+            "certificate_hash": "5858afa4d45b5f9383008d0fdb952feef9375d7c"
+          }
+        },
+        {
+          "client_id": "819417577348-ts1fps446fhepupj0hli9qmpa3trtvtl.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyCrq0DO2pj6uDKk2Nwv_Q5xCv93SXrt2x4"
@@ -20,7 +33,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "819417577348-ts1fps446fhepupj0hli9qmpa3trtvtl.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "819417577348-q6buna9mnhmnjggamr682fnos9ghdhu4.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "dev.albinpk.tasque"
+              }
+            }
+          ]
         }
       }
     }
