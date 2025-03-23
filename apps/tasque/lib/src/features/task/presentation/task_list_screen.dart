@@ -37,27 +37,9 @@ class _TaskListScreenState extends State<TaskListScreen> {
     return Scaffold(
       appBar:
           _showSearch
-              ? _SearchAndFilterAppBar(
-                initialSearchQuery: _searchQuery,
-                initialFilter: (status: _status, priority: _priority),
-                onSearchChange: (value) {
-                  setState(() => _searchQuery = value.trim().nullIfEmpty);
-                },
-                onFilterChange: (value) {
-                  setState(() {
-                    _status = value.status;
-                    _priority = value.priority;
-                  });
-                },
-                onClose:
-                    () => setState(() {
-                      _showSearch = false;
-                      _searchQuery = null;
-                      _status = null;
-                      _priority = null;
-                    }),
-              )
+              ? _buildSearchAppBar()
               : AppBar(
+                title: const Text('Your tasks'),
                 actions: [
                   IconButton(
                     tooltip: 'Search',
@@ -112,6 +94,29 @@ class _TaskListScreenState extends State<TaskListScreen> {
           ),
         ],
       ),
+    );
+  }
+
+  _SearchAndFilterAppBar _buildSearchAppBar() {
+    return _SearchAndFilterAppBar(
+      initialSearchQuery: _searchQuery,
+      initialFilter: (status: _status, priority: _priority),
+      onSearchChange: (value) {
+        setState(() => _searchQuery = value.trim().nullIfEmpty);
+      },
+      onFilterChange: (value) {
+        setState(() {
+          _status = value.status;
+          _priority = value.priority;
+        });
+      },
+      onClose:
+          () => setState(() {
+            _showSearch = false;
+            _searchQuery = null;
+            _status = null;
+            _priority = null;
+          }),
     );
   }
 }
