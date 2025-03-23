@@ -12,5 +12,4 @@ sealed class TaskState with _$TaskState {
   const factory TaskState.error({required String message}) = TaskStateError;
 }
 
-typedef TaskSummary =
-    ({int inProgress, int urgent, int completed, int overdue});
+typedef TaskSummary = ({int pending, int urgent, int completed, int overdue});

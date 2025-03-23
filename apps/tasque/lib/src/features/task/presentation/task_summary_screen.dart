@@ -1,4 +1,5 @@
 import '../../../shared/common_export.dart';
+import '../model/task_status_enum.dart';
 import 'create_task_view.dart';
 import 'cubit/task_cubit.dart';
 import 'widget/task_card.dart';
@@ -122,7 +123,7 @@ class TaskSummaryScreen extends StatelessWidget {
         IconButton(
           tooltip: 'Search',
           icon: const Icon(Icons.search),
-          onPressed: () => const TaskListRoute(search: true).go(context),
+          onPressed: () => const TaskListRoute(searchQuery: '').go(context),
         ),
       ],
     );
@@ -172,10 +173,13 @@ class _TaskSummary extends StatelessWidget {
             Expanded(
               child: _buildGridCard(
                 context: context,
-                title: 'In Progress',
-                count: summary?.inProgress,
+                title: 'Pending',
+                count: summary?.pending,
                 icon: Icons.sync,
                 color: Colors.blue,
+                onTap: () {
+                  const TaskListRoute(status: TaskStatus.pending).go(context);
+                },
               ),
             ),
             Expanded(
@@ -199,6 +203,9 @@ class _TaskSummary extends StatelessWidget {
                 count: summary?.completed,
                 icon: Icons.check,
                 color: Colors.green,
+                onTap: () {
+                  const TaskListRoute(status: TaskStatus.completed).go(context);
+                },
               ),
             ),
             Expanded(
@@ -222,33 +229,41 @@ class _TaskSummary extends StatelessWidget {
     required IconData icon,
     required Color color,
     required int? count,
+    VoidCallback? onTap,
   }) {
     return Card(
       color: color.lighten(),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
-        child: Row(
-          spacing: 8,
-          children: [
-            ClipOval(
-              child: ColoredBox(
-                color: Colors.black12,
-                child: Padding(
-                  padding: const EdgeInsets.all(8),
-                  child: Icon(icon, color: Colors.white, size: 20),
+      clipBehavior: Clip.hardEdge,
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
+          child: Row(
+            spacing: 8,
+            children: [
+              ClipOval(
+                child: ColoredBox(
+                  color: Colors.black12,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8),
+                    child: Icon(icon, color: Colors.white, size: 20),
+                  ),
                 ),
               ),
-            ),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(title, style: context.titleSmall.bold),
-                  Text('${count ?? 0} tasks', style: context.labelSmall.fade()),
-                ],
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(title, style: context.titleSmall.bold),
+                    Text(
+                      '${count ?? 0} tasks',
+                      style: context.labelSmall.fade(),
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

@@ -58,7 +58,7 @@ class TaskCubit extends Cubit<TaskState> {
               .take(15)
               .toList(),
       summary: (
-        inProgress: tasks.where((t) => t.status.isPending).length,
+        pending: tasks.where((t) => t.status.isPending).length,
         // urgent tasks are tasks that are due in the next 3 days
         urgent:
             tasks.where((t) => t.dueDate.difference(now).inDays <= 3).length,

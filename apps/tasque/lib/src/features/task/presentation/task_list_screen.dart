@@ -4,22 +4,33 @@ import '../model/task_status_enum.dart';
 import 'cubit/task_cubit.dart';
 import 'widget/task_card.dart';
 
+// TODO(albin): need a dedicated bloc ??
+
 /// Task list and search screen.
 class TaskListScreen extends StatefulWidget {
-  const TaskListScreen({this.showSearch = false, super.key});
+  const TaskListScreen({
+    super.key,
+    this.searchQuery,
+    this.status,
+    this.priority,
+  });
 
-  final bool showSearch;
+  final String? searchQuery;
+  final TaskStatus? status;
+  final TaskPriority? priority;
 
   @override
   State<TaskListScreen> createState() => _TaskListScreenState();
 }
 
 class _TaskListScreenState extends State<TaskListScreen> {
-  late bool _showSearch = widget.showSearch;
   // filter values
-  String? _searchQuery;
-  TaskStatus? _status;
-  TaskPriority? _priority;
+  late String? _searchQuery = widget.searchQuery;
+  late TaskStatus? _status = widget.status;
+  late TaskPriority? _priority = widget.priority;
+
+  late bool _showSearch =
+      _searchQuery != null || _status != null || _priority != null;
 
   @override
   Widget build(BuildContext context) {
@@ -27,6 +38,8 @@ class _TaskListScreenState extends State<TaskListScreen> {
       appBar:
           _showSearch
               ? _SearchAndFilterAppBar(
+                initialSearchQuery: _searchQuery,
+                initialFilter: (status: _status, priority: _priority),
                 onSearchChange: (value) {
                   setState(() => _searchQuery = value.trim().nullIfEmpty);
                 },
@@ -40,6 +53,8 @@ class _TaskListScreenState extends State<TaskListScreen> {
                     () => setState(() {
                       _showSearch = false;
                       _searchQuery = null;
+                      _status = null;
+                      _priority = null;
                     }),
               )
               : AppBar(
@@ -107,7 +122,12 @@ class _SearchAndFilterAppBar extends StatefulWidget
     required this.onSearchChange,
     required this.onClose,
     required this.onFilterChange,
+    this.initialSearchQuery,
+    this.initialFilter,
   });
+
+  final String? initialSearchQuery;
+  final _FilterSheetResult? initialFilter;
 
   final ValueChanged<String> onSearchChange;
   final ValueChanged<_FilterSheetResult> onFilterChange;
@@ -122,9 +142,11 @@ class _SearchAndFilterAppBar extends StatefulWidget
 
 class _SearchAndFilterAppBarState extends State<_SearchAndFilterAppBar> {
   // filter values
-  final _controller = TextEditingController();
-  TaskStatus? _status;
-  TaskPriority? _priority;
+  late final _controller = TextEditingController(
+    text: widget.initialSearchQuery,
+  );
+  late TaskStatus? _status = widget.initialFilter?.status;
+  late TaskPriority? _priority = widget.initialFilter?.priority;
 
   @override
   void dispose() {

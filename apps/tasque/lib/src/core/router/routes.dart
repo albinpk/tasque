@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../features/task/model/task_priority_enum.dart';
+import '../../features/task/model/task_status_enum.dart';
 import '../../features/task/presentation/task_details_screen.dart';
 import '../../features/task/presentation/task_list_screen.dart';
 import '../../features/task/presentation/task_summary_screen.dart';
@@ -24,14 +26,24 @@ class TaskSummaryRoute extends GoRouteData {
 
 /// Full task list and search screen route.
 class TaskListRoute extends GoRouteData {
-  const TaskListRoute({this.search});
+  const TaskListRoute({this.searchQuery, this.status, this.priority});
 
-  /// Whether to show the search screen.
-  final bool? search;
+  /// Initial search query.
+  final String? searchQuery;
+
+  /// Initial task status filter.
+  final TaskStatus? status;
+
+  /// Initial task priority filter.
+  final TaskPriority? priority;
 
   @override
   Widget build(BuildContext context, GoRouterState state) {
-    return TaskListScreen(showSearch: search ?? false);
+    return TaskListScreen(
+      searchQuery: searchQuery,
+      status: status,
+      priority: priority,
+    );
   }
 }
 
