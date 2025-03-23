@@ -65,7 +65,7 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
                       _isEditing
                           ? _EditForm(
                             task: task,
-                            onSave: () => setState(() => _isEditing = false),
+                            closeEdit: () => setState(() => _isEditing = false),
                           )
                           : _buildView(task),
                 ),
@@ -170,10 +170,10 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
 
 /// A form widget to edit a task.
 class _EditForm extends StatefulWidget {
-  const _EditForm({required this.task, required this.onSave});
+  const _EditForm({required this.task, required this.closeEdit});
 
   final Task task;
-  final VoidCallback onSave;
+  final VoidCallback closeEdit;
 
   @override
   State<_EditForm> createState() => _EditFormState();
@@ -203,69 +203,76 @@ class _EditFormState extends State<_EditForm> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Expanded(
-          child: Form(
-            key: _formKey,
-            child: ListView(
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (_, _) => widget.closeEdit(),
+      child: GestureDetector(
+        onTap: () => FocusScope.of(context).unfocus(),
+        child: Column(
+          children: [
+            Expanded(
+              child: Form(
+                key: _formKey,
+                child: ListView(
+                  padding: const EdgeInsets.all(15),
+                  children: [
+                    Input(
+                      controller: _titleController,
+                      label: 'Task title',
+                      textInputAction: TextInputAction.next,
+                      validator: FormBuilderValidators.required(errorText: ''),
+                    ),
+                    const SizedBox(height: 25),
+
+                    Input(
+                      controller: _descriptionController,
+                      label: 'Description',
+                      maxLines: 4,
+                    ),
+                    const SizedBox(height: 25),
+
+                    Input(
+                      controller: _dateController,
+                      label: 'End date',
+                      readOnly: true,
+                      onTap: _showDatePicker,
+                      validator: FormBuilderValidators.required(errorText: ''),
+                    ),
+                    const SizedBox(height: 25),
+
+                    Align(
+                      alignment: Alignment.topLeft,
+                      child: Text('Priority', style: context.bodyMedium),
+                    ),
+                    const SizedBox(height: 5),
+                    SizedBox(
+                      width: double.infinity,
+                      child: Row(
+                        spacing: 10,
+                        children: [
+                          _buildPriority(TaskPriority.low),
+                          _buildPriority(TaskPriority.medium),
+                          _buildPriority(TaskPriority.high),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Padding(
               padding: const EdgeInsets.all(15),
-              children: [
-                Input(
-                  controller: _titleController,
-                  label: 'Task title',
-                  textInputAction: TextInputAction.next,
-                  validator: FormBuilderValidators.required(errorText: ''),
+              child: SizedBox(
+                width: double.infinity,
+                child: FilledButton(
+                  onPressed: _onUpdate,
+                  child: const Text('Update'),
                 ),
-                const SizedBox(height: 25),
-
-                Input(
-                  controller: _descriptionController,
-                  label: 'Description',
-                  maxLines: 4,
-                ),
-                const SizedBox(height: 25),
-
-                Input(
-                  controller: _dateController,
-                  label: 'End date',
-                  readOnly: true,
-                  onTap: _showDatePicker,
-                  validator: FormBuilderValidators.required(errorText: ''),
-                ),
-                const SizedBox(height: 25),
-
-                Align(
-                  alignment: Alignment.topLeft,
-                  child: Text('Priority', style: context.bodyMedium),
-                ),
-                const SizedBox(height: 5),
-                SizedBox(
-                  width: double.infinity,
-                  child: Row(
-                    spacing: 10,
-                    children: [
-                      _buildPriority(TaskPriority.low),
-                      _buildPriority(TaskPriority.medium),
-                      _buildPriority(TaskPriority.high),
-                    ],
-                  ),
-                ),
-              ],
+              ),
             ),
-          ),
+          ],
         ),
-        Padding(
-          padding: const EdgeInsets.all(15),
-          child: SizedBox(
-            width: double.infinity,
-            child: FilledButton(
-              onPressed: _onUpdate,
-              child: const Text('Update'),
-            ),
-          ),
-        ),
-      ],
+      ),
     );
   }
 
@@ -279,7 +286,7 @@ class _EditFormState extends State<_EditForm> {
         priority: _priority,
       ),
     );
-    widget.onSave();
+    widget.closeEdit();
   }
 
   Widget _buildPriority(TaskPriority priority) {

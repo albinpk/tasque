@@ -76,9 +76,12 @@ class TaskSummaryScreen extends StatelessWidget {
                         child: Center(child: Text('No tasks yet')),
                       )
                       : SliverPadding(
-                        padding: const EdgeInsets.all(
-                          _padding,
-                        ).copyWith(bottom: 120), // 120 for FAB
+                        padding: const EdgeInsets.only(
+                          left: _padding,
+                          right: _padding,
+                          top: 5,
+                          bottom: 120, // 120 for FAB
+                        ),
                         sliver: SliverList.separated(
                           itemCount: recentTasks.length,
                           separatorBuilder:

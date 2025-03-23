@@ -168,63 +168,68 @@ class _SearchAndFilterAppBarState extends State<_SearchAndFilterAppBar> {
       borderRadius: BorderRadius.all(Radius.circular(15)),
       borderSide: BorderSide.none,
     );
-    return AppBar(
-      automaticallyImplyLeading: false,
-      title: TextField(
-        controller: _controller,
-        autofocus: true,
-        decoration: InputDecoration(
-          contentPadding: EdgeInsets.zero,
-          filled: true,
-          fillColor: context.colorScheme.onSurface.fade(0.1),
-          border: border,
-          errorBorder: border,
-          focusedBorder: border,
-          enabledBorder: border,
-          disabledBorder: border,
-          focusedErrorBorder: border,
-          hintText: 'Search...',
-          prefixIconConstraints: const BoxConstraints.tightFor(),
-          prefixIcon: IconButton(
-            style: IconButton.styleFrom(backgroundColor: Colors.transparent),
-            icon: const Icon(Icons.arrow_back_rounded),
-            onPressed: widget.onClose,
-          ),
-          suffixIconConstraints: const BoxConstraints.tightFor(),
-          suffixIcon: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (_controller.text.isNotEmpty)
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (_, _) => widget.onClose(),
+      child: AppBar(
+        automaticallyImplyLeading: false,
+        title: TextField(
+          controller: _controller,
+          autofocus: true,
+          onTapOutside: (event) => FocusScope.of(context).unfocus(),
+          decoration: InputDecoration(
+            contentPadding: EdgeInsets.zero,
+            filled: true,
+            fillColor: context.colorScheme.onSurface.fade(0.1),
+            border: border,
+            errorBorder: border,
+            focusedBorder: border,
+            enabledBorder: border,
+            disabledBorder: border,
+            focusedErrorBorder: border,
+            hintText: 'Search...',
+            prefixIconConstraints: const BoxConstraints.tightFor(),
+            prefixIcon: IconButton(
+              style: IconButton.styleFrom(backgroundColor: Colors.transparent),
+              icon: const Icon(Icons.arrow_back_rounded),
+              onPressed: widget.onClose,
+            ),
+            suffixIconConstraints: const BoxConstraints.tightFor(),
+            suffixIcon: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (_controller.text.isNotEmpty)
+                  IconButton(
+                    key: const Key('clear'), // for default animation
+                    style: IconButton.styleFrom(
+                      backgroundColor: Colors.transparent,
+                    ),
+                    icon: const Icon(Icons.clear_rounded),
+                    onPressed: () {
+                      _controller.clear();
+                      widget.onSearchChange('');
+                      setState(() {});
+                    },
+                  ),
+
+                // filer button
                 IconButton(
-                  key: const Key('clear'), // for default animation
                   style: IconButton.styleFrom(
                     backgroundColor: Colors.transparent,
+                    foregroundColor:
+                        _hasFilter ? context.colorScheme.primary : null,
                   ),
-                  icon: const Icon(Icons.clear_rounded),
-                  onPressed: () {
-                    _controller.clear();
-                    widget.onSearchChange('');
-                    setState(() {});
-                  },
+                  icon: const Icon(Icons.filter_alt_rounded),
+                  onPressed: _showFilterSheet,
                 ),
-
-              // filer button
-              IconButton(
-                style: IconButton.styleFrom(
-                  backgroundColor: Colors.transparent,
-                  foregroundColor:
-                      _hasFilter ? context.colorScheme.primary : null,
-                ),
-                icon: const Icon(Icons.filter_alt_rounded),
-                onPressed: _showFilterSheet,
-              ),
-            ],
+              ],
+            ),
           ),
+          onChanged: (value) {
+            widget.onSearchChange(value);
+            setState(() {});
+          },
         ),
-        onChanged: (value) {
-          widget.onSearchChange(value);
-          setState(() {});
-        },
       ),
     );
   }
