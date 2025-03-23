@@ -23,4 +23,7 @@ abstract interface class TaskRepository {
 
   /// Updates a task.
   FutureOr<void> updateTask(Task task);
+
+  /// Deletes a task.
+  FutureOr<void> deleteTask(Task task);
 }

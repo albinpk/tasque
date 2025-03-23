@@ -88,4 +88,13 @@ class TaskCubit extends Cubit<TaskState> {
   Future<void> markAsPending(Task task) async {
     await updateTask(task.copyWith(status: TaskStatus.pending));
   }
+
+  Future<void> deleteTask(Task task) async {
+    try {
+      await _taskRepository.deleteTask(task);
+      emit(await _getTaskData());
+    } on Exception catch (e) {
+      emit(TaskState.error(message: e.toString()));
+    }
+  }
 }

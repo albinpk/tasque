@@ -46,7 +46,8 @@ class TaskLocalRepository implements TaskRepository {
   }
 
   @override
-  FutureOr<void> updateTask(Task task) {
-    _taskBox.put(task.toEntity());
-  }
+  FutureOr<void> updateTask(Task task) => _taskBox.put(task.toEntity());
+
+  @override
+  FutureOr<void> deleteTask(Task task) => _taskBox.remove(task.id);
 }

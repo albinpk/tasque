@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import '../../../shared/common_export.dart';
 import '../model/task.dart';
 import '../model/task_priority_enum.dart';
@@ -22,7 +24,7 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
   Widget build(BuildContext context) {
     final task = context.select((TaskCubit value) {
       if (value.state case TaskStateLoaded(:final tasks)) {
-        return tasks.firstWhere((t) => t.id == widget.taskId);
+        return tasks.firstWhereOrNull((t) => t.id == widget.taskId);
       }
     });
     return Scaffold(
@@ -33,13 +35,24 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
             context.pop();
           },
         ),
-        actions: [
-          if (task != null && !_isEditing)
-            IconButton(
-              onPressed: () => setState(() => _isEditing = true),
-              icon: const Icon(Icons.edit),
-            ),
-        ],
+        actions:
+            task != null && !_isEditing
+                ? [
+                  IconButton(
+                    tooltip: 'Edit',
+                    onPressed: () => setState(() => _isEditing = true),
+                    icon: const Icon(Icons.edit_rounded),
+                  ),
+                  IconButton(
+                    tooltip: 'Delete',
+                    style: IconButton.styleFrom(
+                      foregroundColor: context.colorScheme.error,
+                    ),
+                    onPressed: () => _onDelete(task),
+                    icon: const Icon(Icons.delete_rounded),
+                  ),
+                ]
+                : null,
       ),
       body:
           task == null
@@ -57,6 +70,35 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
                 ),
               ),
     );
+  }
+
+  Future<void> _onDelete(Task task) async {
+    if (!await _deleteConfirmation() || !mounted) return;
+    unawaited(context.read<TaskCubit>().deleteTask(task));
+    context.pop();
+  }
+
+  Future<bool> _deleteConfirmation() async {
+    return await showDialog<bool>(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: const Text('Are you sure you want to delete this task?'),
+              content: const Text('This action cannot be undone'),
+              actions: [
+                TextButton(
+                  onPressed: () => context.pop(),
+                  child: const Text('Cancel'),
+                ),
+                FilledButton(
+                  onPressed: () => context.pop(true),
+                  child: const Text('Delete'),
+                ),
+              ],
+            );
+          },
+        ) ??
+        false;
   }
 
   Widget _buildView(Task task) {

@@ -1,5 +1,6 @@
 // A barrel file to export all common packages.
 
+export 'package:collection/collection.dart';
 export 'package:flex_color_scheme/flex_color_scheme.dart';
 export 'package:flutter/material.dart';
 export 'package:flutter_bloc/flutter_bloc.dart';

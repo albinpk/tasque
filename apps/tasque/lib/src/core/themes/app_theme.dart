@@ -34,6 +34,12 @@ abstract class AppTheme {
           ),
         ),
       ),
+      textButtonTheme: TextButtonThemeData(
+        style: FilledButton.styleFrom(
+          padding: buttonPadding,
+          shape: buttonShape,
+        ),
+      ),
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
           padding: buttonPadding,
