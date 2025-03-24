@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'dart:developer';
 
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import '../../../shared/common_export.dart';
@@ -147,6 +149,45 @@ class _AppBar extends StatefulWidget {
 
 class _AppBarState extends State<_AppBar> {
   late final _userStream = context.read<AuthRepository>().userStream();
+  late final StreamSubscription<List<ConnectivityResult>>
+  _connectivityStreamSubscription;
+
+  @override
+  void initState() {
+    super.initState();
+    _listenConnection();
+  }
+
+  @override
+  void dispose() {
+    _connectivityStreamSubscription.cancel();
+    super.dispose();
+  }
+
+  void _listenConnection() {
+    _connectivityStreamSubscription = Connectivity().onConnectivityChanged
+        .listen((event) {
+          if (mounted) {
+            final offline = event.contains(ConnectivityResult.none);
+            ScaffoldMessenger.of(context)
+              ..clearSnackBars()
+              ..showSnackBar(
+                SnackBar(
+                  content: Text(
+                    offline ? 'You are offline' : 'You are online',
+                    style:
+                        offline
+                            ? context.bodyMedium.copyWith(
+                              color: context.colorScheme.onError,
+                            )
+                            : null,
+                  ),
+                  backgroundColor: offline ? context.colorScheme.error : null,
+                ),
+              );
+          }
+        });
+  }
 
   @override
   Widget build(BuildContext context) {
