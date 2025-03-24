@@ -80,7 +80,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
                 }
 
                 return SliverPadding(
-                  padding: const EdgeInsets.all(15),
+                  padding: const EdgeInsets.all(15).copyWith(bottom: 80),
                   sliver: SliverList.separated(
                     separatorBuilder: (_, _) => const SizedBox(height: 20),
                     itemCount: filtered.length,
