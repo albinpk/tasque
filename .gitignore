@@ -5,3 +5,9 @@ build/
 
 .flutter-plugins
 .flutter-plugins-dependencies
+
+# IntelliJ related
+*.iml
+*.ipr
+*.iws
+.idea/
