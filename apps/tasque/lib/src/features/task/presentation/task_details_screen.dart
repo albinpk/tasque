@@ -307,7 +307,7 @@ class _EditFormState extends State<_EditForm> {
     final date = await showDatePicker(
       context: context,
       firstDate: now,
-      initialDate: now.add(const Duration(days: 1)),
+      initialDate: task.dueDate,
       lastDate: now.add(const Duration(days: 365 * 5)), // 5 years
     );
     if (date == null) return;

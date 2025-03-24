@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:firebase_auth/firebase_auth.dart';
 
 import '../../../shared/common_export.dart';
@@ -216,6 +218,7 @@ class _UserDialog extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+            const SizedBox(height: 10),
             CircleAvatar(
               radius: 30,
               foregroundImage:
@@ -225,6 +228,7 @@ class _UserDialog extends StatelessWidget {
             const SizedBox(height: 10),
 
             Text(user.displayName ?? 'Hello', style: context.titleMedium),
+            if (user.email != null) Text(user.email!),
 
             TextButton(
               onPressed: () => _onSignOut(context),
@@ -239,8 +243,12 @@ class _UserDialog extends StatelessWidget {
   Future<void> _onSignOut(BuildContext context) async {
     try {
       await context.read<AuthRepository>().signOut();
-      if (context.mounted) LoginRoute().go(context);
+      if (context.mounted) {
+        context.read<TaskCubit>().clearState();
+        LoginRoute().go(context);
+      }
     } catch (e) {
+      log(e.toString());
       if (context.mounted) {
         ScaffoldMessenger.of(
           context,

@@ -174,7 +174,7 @@ class _CreateTaskViewState extends State<CreateTaskView> {
     final date = await showDatePicker(
       context: context,
       firstDate: now,
-      initialDate: now.add(const Duration(days: 1)),
+      initialDate: _date ?? now.add(const Duration(days: 1)),
       lastDate: now.add(const Duration(days: 365 * 5)), // 5 years
     );
     if (date == null) return;

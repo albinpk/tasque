@@ -52,6 +52,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
         slivers: [
           BlocBuilder<TaskCubit, TaskState>(
             builder: (context, state) {
+              // TODO(albin): lift state
               if (state case TaskStateLoaded(:final tasks)) {
                 var filtered = tasks;
                 if (_searchQuery case final q?) {
