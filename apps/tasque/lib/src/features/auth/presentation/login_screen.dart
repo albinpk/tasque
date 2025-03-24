@@ -27,16 +27,19 @@ class _LoginScreenState extends State<LoginScreen> {
           padding: const EdgeInsets.all(15),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const SizedBox(height: 20),
-              Text('Get Started with \nTasque', style: context.displaySmall),
+              Text('Welcome to Tasque', style: context.displaySmall),
               const SizedBox(height: 10),
-
               const Text(
-                'Sign up to manage your tasks effortlessly, even offline',
+                'Organize your tasks, sync seamlessly, '
+                'and stay on track—anytime, anywhere',
               ),
 
-              Expanded(child: Lottie.asset(Assets.lottie.loginPlanningJSON)),
+              const SizedBox(height: 30),
+              Flexible(child: Lottie.asset(Assets.lottie.loginPlanningJSON)),
+              const SizedBox(height: 30),
 
               FilledButton(
                 onPressed: _onSignInWithGoogle,
