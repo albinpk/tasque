@@ -1,0 +1,9 @@
+# dart run flutter_native_splash:create
+# dart run flutter_native_splash:remove
+flutter_native_splash:
+  color: "#ffffff"
+  image: assets/logo/logo-1024.png
+  android_12:
+    image: assets/logo/logo-fg.png
+    color: "#ffffff"
+    icon_background_color: "#e46659"
