@@ -5,14 +5,14 @@
   "entities": [
     {
       "id": "2:1345759841069349439",
-      "lastPropertyId": "7:683049169092397925",
+      "lastPropertyId": "8:8553306680066652670",
       "name": "TaskEntity",
       "properties": [
         {
           "id": "1:6164374301938093392",
           "name": "id",
           "type": 6,
-          "flags": 1
+          "flags": 129
         },
         {
           "id": "2:2331663858544108054",
@@ -43,13 +43,20 @@
           "id": "7:683049169092397925",
           "name": "dbStatus",
           "type": 9
+        },
+        {
+          "id": "8:8553306680066652670",
+          "name": "uid",
+          "type": 9,
+          "flags": 2048,
+          "indexId": "1:8920962430444122018"
         }
       ],
       "relations": []
     }
   ],
   "lastEntityId": "2:1345759841069349439",
-  "lastIndexId": "0:0",
+  "lastIndexId": "1:8920962430444122018",
   "lastRelationId": "0:0",
   "lastSequenceId": "0:0",
   "modelVersion": 5,

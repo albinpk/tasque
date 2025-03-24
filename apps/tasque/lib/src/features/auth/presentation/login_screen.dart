@@ -1,9 +1,11 @@
+import 'dart:async';
 import 'dart:developer';
 
 import 'package:lottie/lottie.dart';
 
 import '../../../../assets.dart';
 import '../../../shared/common_export.dart';
+import '../../task/presentation/cubit/task_cubit.dart';
 import '../repository/auth_repository.dart';
 
 /// The login screen of the app.
@@ -58,10 +60,17 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _onSignInWithGoogle() async {
+    if (_isLoading) return;
     try {
       setState(() => _isLoading = true);
       await context.read<AuthRepository>().signInWithGoogle();
-      if (mounted) TaskSummaryRoute().go(context);
+      if (mounted) {
+        if (context.read<TaskCubit>().state is TaskStateInitial) {
+          // in case of logout and login
+          unawaited(context.read<TaskCubit>().loadTasks());
+        }
+        TaskSummaryRoute().go(context);
+      }
     } catch (e) {
       log(e.toString());
       if (mounted) {

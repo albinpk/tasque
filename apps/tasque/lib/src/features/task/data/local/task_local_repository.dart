@@ -1,11 +1,15 @@
 import 'dart:async';
 
+import 'package:uuid/uuid.dart';
+
 import '../../../../../objectbox.g.dart';
 import '../../model/task.dart';
 import '../../model/task_priority_enum.dart';
 import '../../model/task_status_enum.dart';
-import '../task_repository.dart';
 import 'model/task_entity.dart';
+import 'task_repository.dart';
+
+const uuid = Uuid();
 
 /// Implementation of [TaskRepository] using ObjectBox.
 class TaskLocalRepository implements TaskRepository {
@@ -24,6 +28,7 @@ class TaskLocalRepository implements TaskRepository {
     return task == null ? null : Task.fromEntity(task);
   }
 
+  // TODO(albin): use Todo model
   @override
   Future<Task> createTask({
     required String title,
@@ -34,6 +39,7 @@ class TaskLocalRepository implements TaskRepository {
   }) async {
     final task =
         TaskEntity(
+            uid: uuid.v4(),
             title: title,
             description: description,
             dueDate: dueDate,
@@ -43,6 +49,11 @@ class TaskLocalRepository implements TaskRepository {
           ..status = status;
     final id = _taskBox.put(task);
     return (await getTask(id))!;
+  }
+
+  @override
+  Future<void> addAllTasks(List<Task> tasks) async {
+    await _taskBox.putManyAsync(tasks.map((e) => e.toEntity()).toList());
   }
 
   @override

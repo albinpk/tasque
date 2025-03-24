@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../../../../shared/common_export.dart';
-import '../../data/task_repository.dart';
+import '../../data/local/task_repository.dart';
+import '../../data/sync/task_sync_repository.dart';
 import '../../model/task.dart';
 import '../../model/task_priority_enum.dart';
 import '../../model/task_status_enum.dart';
@@ -10,15 +13,26 @@ part 'task_cubit.freezed.dart';
 part 'task_state.dart';
 
 class TaskCubit extends Cubit<TaskState> {
-  TaskCubit({required TaskRepository taskRepository})
-    : _taskRepository = taskRepository,
-      super(const TaskState.initial());
+  TaskCubit({
+    required TaskSyncRepository syncRepository,
+    required TaskRepository taskRepository,
+  }) : _syncRepository = syncRepository,
+       _taskRepository = taskRepository,
+       super(const TaskState.initial());
 
   final TaskRepository _taskRepository;
+  final TaskSyncRepository _syncRepository;
+
+  void clearState() => emit(const TaskState.initial());
 
   Future<void> loadTasks() async {
     try {
       emit(const TaskState.loading());
+
+      // fetch tasks from server
+      final tasks = await _syncRepository.getAllTasks();
+      if (tasks.isNotEmpty) await _taskRepository.addAllTasks(tasks);
+
       emit(await _getTaskData());
     } on Exception catch (e) {
       emit(TaskState.error(message: e.toString()));
@@ -33,13 +47,14 @@ class TaskCubit extends Cubit<TaskState> {
     TaskStatus? status,
   }) async {
     try {
-      await _taskRepository.createTask(
+      final task = await _taskRepository.createTask(
         title: title,
         description: description?.nullIfEmpty,
         dueDate: dueDate,
         status: status ?? TaskStatus.pending,
         priority: priority,
       );
+      unawaited(_syncRepository.addTask(task)); // sync to server
       emit(await _getTaskData());
     } on Exception catch (e) {
       emit(TaskState.error(message: e.toString()));
@@ -74,6 +89,7 @@ class TaskCubit extends Cubit<TaskState> {
   Future<void> updateTask(Task task) async {
     try {
       await _taskRepository.updateTask(task);
+      unawaited(_syncRepository.updateTask(task)); // sync to server
       emit(await _getTaskData());
     } on Exception catch (e) {
       emit(TaskState.error(message: e.toString()));
@@ -91,6 +107,7 @@ class TaskCubit extends Cubit<TaskState> {
   Future<void> deleteTask(Task task) async {
     try {
       await _taskRepository.deleteTask(task);
+      unawaited(_syncRepository.deleteTask(task)); // sync to server
       emit(await _getTaskData());
     } on Exception catch (e) {
       emit(TaskState.error(message: e.toString()));

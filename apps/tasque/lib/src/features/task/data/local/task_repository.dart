@@ -1,8 +1,8 @@
 import 'dart:async';
 
-import '../model/task.dart';
-import '../model/task_priority_enum.dart';
-import '../model/task_status_enum.dart';
+import '../../model/task.dart';
+import '../../model/task_priority_enum.dart';
+import '../../model/task_status_enum.dart';
 
 /// Interface for task repository.
 abstract interface class TaskRepository {
@@ -20,6 +20,9 @@ abstract interface class TaskRepository {
     required TaskStatus status,
     required TaskPriority priority,
   });
+
+  /// Adds multiple tasks. Used when syncing tasks from server.
+  Future<void> addAllTasks(List<Task> tasks);
 
   /// Updates a task.
   FutureOr<void> updateTask(Task task);

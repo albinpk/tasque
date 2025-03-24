@@ -7,14 +7,20 @@ import '../../../model/task_status_enum.dart';
 @Entity()
 class TaskEntity {
   TaskEntity({
+    required this.uid,
     required this.title,
     required this.dueDate,
     required this.createdAt,
     this.description,
   });
 
-  @Id()
+  /// ObjectBox id.
+  @Id(assignable: true)
   int id = 0;
+
+  /// Task id for sync.
+  @Index()
+  String uid;
 
   /// Task title.
   String title;
