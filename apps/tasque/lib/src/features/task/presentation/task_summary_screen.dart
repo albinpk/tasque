@@ -35,7 +35,7 @@ class TaskSummaryScreen extends StatelessWidget {
 
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.all(_padding).copyWith(bottom: 0),
+              padding: const EdgeInsets.symmetric(horizontal: _padding),
               child: Row(
                 children: [
                   Expanded(
