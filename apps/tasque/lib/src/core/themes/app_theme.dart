@@ -1,14 +1,14 @@
 import '../../shared/common_export.dart';
 
-// TODO(albin): getter to final
-
 /// Global theme configurations.
 abstract class AppTheme {
-  static ThemeData get light =>
-      _common(FlexThemeData.light(scheme: FlexScheme.mandyRed));
+  static final ThemeData light = _common(
+    FlexThemeData.light(scheme: FlexScheme.mandyRed),
+  );
 
-  static ThemeData get dark =>
-      _common(FlexThemeData.dark(scheme: FlexScheme.mandyRed));
+  static final ThemeData dark = _common(
+    FlexThemeData.dark(scheme: FlexScheme.mandyRed),
+  );
 
   static ThemeData _common(ThemeData theme) {
     final cs = theme.colorScheme;
