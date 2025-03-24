@@ -51,6 +51,7 @@ class AuthRepository {
   /// Sign out and remove all tasks from local database.
   Future<void> signOut() async {
     await _auth.signOut();
+    await GoogleSignIn().signOut();
     await _taskBox.removeAllAsync();
   }
 }
