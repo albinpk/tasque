@@ -1,4 +1,8 @@
-# Tasque - A Task Management Application
+<h1 align="center">
+    <img src="apps/tasque/assets/logo/logo-1024.png" height="200px" alt="BookMyShow Tracker logo" />
+    <br>
+    Tasque
+</h1>
 
 ## Project Overview
 
@@ -72,6 +76,8 @@ Tasque uses **Bloc (Cubit)** for state management, ensuring a reactive and scala
 | cloud_firestore         | Firebase Firestore integration   |
 | firebase_auth           | User authentication              |
 | google_sign_in          | Google authentication support    |
+| objectbox               | Local database                   |
+| freezed                 | Data models and serialization    |
 | lottie                  | Animations for better UX         |
 | form_builder_validators | Form validation utilities        |
 | intl                    | Date formatting and localization |
@@ -94,7 +100,7 @@ Tasque uses **Bloc (Cubit)** for state management, ensuring a reactive and scala
    ```
 2. **Navigate to the Flutter app directory:**
    ```sh
-   cd apps/tasque
+   cd apps/tasque # Flutter app directory
    ```
 3. **Install dependencies:**
    ```sh
