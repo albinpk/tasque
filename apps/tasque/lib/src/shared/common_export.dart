@@ -10,4 +10,5 @@ export 'package:intl/intl.dart' hide TextDirection;
 
 export '../core/router/routes.dart';
 export 'extensions/extensions.dart';
+export 'logger.dart';
 export 'widgets/widgets.dart';

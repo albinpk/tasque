@@ -1,7 +1,9 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import '../../../../core/notifications/notification_service.dart';
 import '../../../../shared/common_export.dart';
 import '../../data/local/task_repository.dart';
 import '../../data/sync/task_sync_repository.dart';
@@ -16,12 +18,15 @@ class TaskCubit extends Cubit<TaskState> {
   TaskCubit({
     required TaskSyncRepository syncRepository,
     required TaskRepository taskRepository,
-  }) : _syncRepository = syncRepository,
+    required NotificationService notificationService,
+  }) : _notificationService = notificationService,
+       _syncRepository = syncRepository,
        _taskRepository = taskRepository,
        super(const TaskState.initial());
 
   final TaskRepository _taskRepository;
   final TaskSyncRepository _syncRepository;
+  final NotificationService _notificationService;
 
   void clearState() => emit(const TaskState.initial());
 
@@ -34,6 +39,7 @@ class TaskCubit extends Cubit<TaskState> {
       if (tasks.isNotEmpty) await _taskRepository.addAllTasks(tasks);
 
       emit(await _getTaskData());
+      // TODO(albin): Schedule notifications
     } on Exception catch (e) {
       emit(TaskState.error(message: e.toString()));
     }
@@ -56,10 +62,37 @@ class TaskCubit extends Cubit<TaskState> {
       );
       unawaited(_syncRepository.addTask(task)); // sync to server
       emit(await _getTaskData());
+      unawaited(_scheduleNotification(task));
     } on Exception catch (e) {
       emit(TaskState.error(message: e.toString()));
     }
   }
+
+  /// Schedules a notification for a task.
+  /// If the task is due today, the notification is scheduled for midnight.
+  /// Otherwise, the notification is scheduled for the due date at 5pm.
+  Future<void> _scheduleNotification(Task task) async {
+    final now = DateTime.now();
+    if (task.dueDate.isBefore(now)) return;
+    await _notificationService.schedule(
+      id: task.id,
+      title:
+          '⏰ Task Reminder: '
+          '“${task.title.substring(0, min(task.title.length, 20))}…” '
+          'Due Today!',
+      body:
+          'Your task “${task.title}” is due today. '
+          'Stay on track and complete it on time. ✅',
+      time:
+          task.dueDate.isToday && now.hour >= 17
+              ? task.dueDate.endOfDay
+              : task.dueDate.copyWith(hour: 17), // 5pm
+    );
+  }
+
+  /// Cancels a notification for a task.
+  Future<void> _cancelNotification(int id) =>
+      _notificationService.cancelSchedule(id);
 
   Future<TaskStateLoaded> _getTaskData() async {
     final tasks = await _taskRepository.getTasks();
@@ -91,6 +124,7 @@ class TaskCubit extends Cubit<TaskState> {
       await _taskRepository.updateTask(task);
       unawaited(_syncRepository.updateTask(task)); // sync to server
       emit(await _getTaskData());
+      // TODO(albin): update content of scheduled notification
     } on Exception catch (e) {
       emit(TaskState.error(message: e.toString()));
     }
@@ -98,10 +132,12 @@ class TaskCubit extends Cubit<TaskState> {
 
   Future<void> markAsDone(Task task) async {
     await updateTask(task.copyWith(status: TaskStatus.completed));
+    unawaited(_cancelNotification(task.id));
   }
 
   Future<void> markAsPending(Task task) async {
     await updateTask(task.copyWith(status: TaskStatus.pending));
+    unawaited(_scheduleNotification(task));
   }
 
   Future<void> deleteTask(Task task) async {
@@ -109,6 +145,7 @@ class TaskCubit extends Cubit<TaskState> {
       await _taskRepository.deleteTask(task);
       unawaited(_syncRepository.deleteTask(task)); // sync to server
       emit(await _getTaskData());
+      unawaited(_cancelNotification(task.id));
     } on Exception catch (e) {
       emit(TaskState.error(message: e.toString()));
     }

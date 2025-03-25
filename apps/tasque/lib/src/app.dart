@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../main.dart';
+import 'core/notifications/notification_service.dart';
 import 'core/router/router.dart';
 import 'core/themes/app_theme.dart';
 import 'features/auth/repository/auth_repository.dart';
@@ -40,6 +41,7 @@ class App extends StatelessWidget {
               return TaskCubit(
                 taskRepository: context.read(),
                 syncRepository: context.read(),
+                notificationService: NotificationService.i,
               )..loadTasks();
             },
           ),

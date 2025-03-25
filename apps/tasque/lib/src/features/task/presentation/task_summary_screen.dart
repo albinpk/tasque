@@ -1,9 +1,9 @@
 import 'dart:async';
-import 'dart:developer';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
+import '../../../core/notifications/notification_service.dart';
 import '../../../shared/common_export.dart';
 import '../../auth/repository/auth_repository.dart';
 import '../model/task_status_enum.dart';
@@ -12,8 +12,57 @@ import 'cubit/task_cubit.dart';
 import 'widget/task_card.dart';
 
 /// The main screen of the app.
-class TaskSummaryScreen extends StatelessWidget {
+class TaskSummaryScreen extends StatefulWidget {
   const TaskSummaryScreen({super.key});
+
+  @override
+  State<TaskSummaryScreen> createState() => _TaskSummaryScreenState();
+}
+
+class _TaskSummaryScreenState extends State<TaskSummaryScreen> {
+  late final StreamSubscription<List<ConnectivityResult>>
+  _connectivityStreamSubscription;
+
+  @override
+  void initState() {
+    super.initState();
+    _listenConnection();
+    _requestNotificationPermission();
+  }
+
+  @override
+  void dispose() {
+    _connectivityStreamSubscription.cancel();
+    super.dispose();
+  }
+
+  /// Listen to connectivity changes and show a snackbar.
+  void _listenConnection() {
+    _connectivityStreamSubscription = Connectivity().onConnectivityChanged
+        .listen((event) {
+          if (!mounted) return;
+          final offline = event.contains(ConnectivityResult.none);
+          ScaffoldMessenger.of(context)
+            ..clearSnackBars()
+            ..showSnackBar(
+              SnackBar(
+                content: Text(
+                  offline ? 'You are offline' : 'You are online',
+                  style:
+                      offline
+                          ? context.bodyMedium.copyWith(
+                            color: context.colorScheme.onError,
+                          )
+                          : null,
+                ),
+                backgroundColor: offline ? context.colorScheme.error : null,
+              ),
+            );
+        });
+  }
+
+  void _requestNotificationPermission() =>
+      NotificationService.i.requestPermissions();
 
   /// Padding for the page.
   static const _padding = 15.0;
@@ -149,45 +198,6 @@ class _AppBar extends StatefulWidget {
 
 class _AppBarState extends State<_AppBar> {
   late final _userStream = context.read<AuthRepository>().userStream();
-  late final StreamSubscription<List<ConnectivityResult>>
-  _connectivityStreamSubscription;
-
-  @override
-  void initState() {
-    super.initState();
-    _listenConnection();
-  }
-
-  @override
-  void dispose() {
-    _connectivityStreamSubscription.cancel();
-    super.dispose();
-  }
-
-  void _listenConnection() {
-    _connectivityStreamSubscription = Connectivity().onConnectivityChanged
-        .listen((event) {
-          if (mounted) {
-            final offline = event.contains(ConnectivityResult.none);
-            ScaffoldMessenger.of(context)
-              ..clearSnackBars()
-              ..showSnackBar(
-                SnackBar(
-                  content: Text(
-                    offline ? 'You are offline' : 'You are online',
-                    style:
-                        offline
-                            ? context.bodyMedium.copyWith(
-                              color: context.colorScheme.onError,
-                            )
-                            : null,
-                  ),
-                  backgroundColor: offline ? context.colorScheme.error : null,
-                ),
-              );
-          }
-        });
-  }
 
   @override
   Widget build(BuildContext context) {

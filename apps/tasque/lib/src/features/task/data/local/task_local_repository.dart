@@ -28,7 +28,7 @@ class TaskLocalRepository implements TaskRepository {
     return task == null ? null : Task.fromEntity(task);
   }
 
-  // TODO(albin): use Todo model
+  // TODO(albin): use Task model
   @override
   Future<Task> createTask({
     required String title,
