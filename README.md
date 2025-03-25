@@ -120,7 +120,6 @@ Tasque uses **Bloc (Cubit)** for state management, ensuring a reactive and scala
 ## Future Enhancements (todo)
 
 - **Import/Export Feature:** Enable data backup and restore.
-- **Push Notifications:** Reminders for due tasks.
 
 ---
 
