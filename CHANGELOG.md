@@ -3,6 +3,27 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 2025-03-26
+
+### Changes
+
+---
+
+Packages with breaking changes:
+
+ - There are no breaking changes in this release.
+
+Packages with other changes:
+
+ - [`tasque` - `v0.0.3`](#tasque---v003)
+
+---
+
+#### `tasque` - `v0.0.3`
+
+ - **FEAT**: add local notification service for task reminders.
+
+
 ## 2025-03-24
 
 ### Changes

@@ -1,3 +1,7 @@
+## 0.0.3
+
+ - **FEAT**: add local notification service for task reminders.
+
 ## 0.0.2
 
  - **FIX**: update application label in AndroidManifest.xml.
