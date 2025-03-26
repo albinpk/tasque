@@ -15,6 +15,27 @@ Packages with breaking changes:
 
 Packages with other changes:
 
+ - [`tasque` - `v0.0.4`](#tasque---v004)
+
+---
+
+#### `tasque` - `v0.0.4`
+
+ - **FEAT**: show a welcome notification.
+
+
+## 2025-03-26
+
+### Changes
+
+---
+
+Packages with breaking changes:
+
+ - There are no breaking changes in this release.
+
+Packages with other changes:
+
  - [`tasque` - `v0.0.3`](#tasque---v003)
 
 ---

@@ -1,3 +1,7 @@
+## 0.0.4
+
+ - **FEAT**: show a welcome notification.
+
 ## 0.0.3
 
  - **FEAT**: add local notification service for task reminders.
