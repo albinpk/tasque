@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../core/notifications/notification_service.dart';
 import '../../../shared/common_export.dart';
@@ -61,8 +62,27 @@ class _TaskSummaryScreenState extends State<TaskSummaryScreen> {
         });
   }
 
-  void _requestNotificationPermission() =>
-      NotificationService.i.requestPermissions();
+  Future<void> _requestNotificationPermission() async {
+    final granted = await NotificationService.i.requestPermissions();
+    if (granted) await _showOneTimeNotification();
+  }
+
+  /// Show a welcome notification once.
+  Future<void> _showOneTimeNotification() async {
+    try {
+      final pref = await SharedPreferences.getInstance();
+      if (pref.getBool('isFirstRun') != null) return;
+      await NotificationService.i.show(
+        title: 'Welcome to Tasque! 🎉',
+        body:
+            'Notifications are enabled! '
+            'Stay on top of your tasks with timely reminders and updates. ✅',
+      );
+      await pref.setBool('isFirstRun', false);
+    } catch (e) {
+      log('one time notification', e);
+    }
+  }
 
   /// Padding for the page.
   static const _padding = 15.0;

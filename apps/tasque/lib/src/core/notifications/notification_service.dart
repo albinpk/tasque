@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
@@ -21,7 +23,6 @@ class NotificationService {
       const initializationSettings = InitializationSettings(
         android: androidSettings,
         iOS: iosSettings,
-        macOS: iosSettings,
       );
       await _plugin.initialize(
         initializationSettings,
@@ -33,7 +34,8 @@ class NotificationService {
   }
 
   /// Requests notification permissions from the user.
-  Future<void> requestPermissions() async {
+  Future<bool> requestPermissions() async {
+    bool? granted;
     try {
       switch (defaultTargetPlatform) {
         case TargetPlatform.android:
@@ -43,10 +45,10 @@ class NotificationService {
                     AndroidFlutterLocalNotificationsPlugin
                   >()!;
           await android.requestNotificationsPermission();
-          await android.requestExactAlarmsPermission();
+          granted = await android.requestExactAlarmsPermission();
 
         case TargetPlatform.iOS:
-          await _plugin
+          granted = await _plugin
               .resolvePlatformSpecificImplementation<
                 IOSFlutterLocalNotificationsPlugin
               >()
@@ -57,6 +59,7 @@ class NotificationService {
     } catch (e) {
       log('notification permission', e);
     }
+    return granted ?? false;
   }
 
   /// Notification channel.
@@ -68,8 +71,38 @@ class NotificationService {
       importance: Importance.max,
       priority: Priority.high,
       ticker: 'ticker',
+      styleInformation: BigTextStyleInformation(''),
     ),
   );
+
+  static const _miscellaneous = NotificationDetails(
+    android: AndroidNotificationDetails(
+      'misc',
+      'Miscellaneous',
+      channelDescription: 'Miscellaneous notifications',
+      importance: Importance.max,
+      priority: Priority.high,
+      ticker: 'ticker',
+      styleInformation: BigTextStyleInformation(''),
+    ),
+  );
+
+  Future<void> show({
+    required String title,
+    required String body,
+    int? id,
+  }) async {
+    try {
+      await _plugin.show(
+        id ?? Random().nextInt(1000),
+        title,
+        body,
+        _miscellaneous,
+      );
+    } catch (e) {
+      log('notification show', e);
+    }
+  }
 
   /// Schedules a notification at a specific time.
   Future<void> schedule({
